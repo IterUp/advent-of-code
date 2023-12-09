@@ -1,9 +1,38 @@
+from bisect import bisect_right
+class Maps:
+    def __init__(self):
+        self.maps = []
+
+    def add(self, new_map):
+        new_map.sort()
+        self.maps.append(new_map)
+
+    def find_location(self, seed):
+        for m in self.maps:
+            seed = m.get(seed, seed)
+        return seed
+
+class Map:
+    def __init__(self):
+        self.data = []
+
+    def add(self, dst, src, count):
+        self.data.append((dst, src, count))
+
+    def sort(self):
+        self.data.sort(key = lambda x: x[1])
+
+    def get(self, key, default):
+        upper_index = bisect_right(self.data, key, key=lambda x: x[1])
+        dst, src, count = self.data[upper_index-1]
+        return dst + key - src if key < src+count else default
+
+maps = Maps()
 lines = open("input.txt").readlines()
 seeds = [int(value) for value in lines[0].split()[1:]]
 
-maps = []
 has_started = False
-current_map = {}
+current_map = Map()
 for line in lines[2:]:
     line = line.strip()
     if not has_started:
@@ -11,24 +40,12 @@ for line in lines[2:]:
         has_started = line
     elif line:
         dst, src, count = line.split()
-        count = int(count)
-        src = int(src)
-        dst = int(dst)
-        # print("#", src, dst, count)
-        for i in range(count):
-            current_map[src+i] = dst+i
+        current_map.add(int(dst), int(src), int(count))
     else:
-        # print(has_started)
-        # print(current_map)
         has_started = False
-        maps.append(current_map)
-        current_map = {}
-maps.append(current_map)
+        maps.add(current_map)
+        current_map = Map()
+maps.add(current_map)
+del current_map
 
-def find_location(seed, maps):
-    for m in maps:
-        seed = m.get(seed, seed)
-    print(seed)
-    return seed
-
-print(min(*[find_location(s, maps) for s in seeds]))
+print(min(*[maps.find_location(s) for s in seeds]))
