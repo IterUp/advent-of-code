@@ -1,16 +1,18 @@
 from itertools import combinations
+is_part2 = True
+expand_amount = 999999 if is_part2 else 1
 grid = [s.strip() for s in open("input.txt").readlines()]
 x_shift, y_shift = [], []
 shifts = 0
 for y, row in enumerate(grid):
     if not '#' in row:
-        shifts += 1
+        shifts += expand_amount
     y_shift.append(shifts)
 
 shifts = 0
 for x in range(len(grid[0])):
     if not '#' in [row[x] for row in grid]:
-        shifts += 1
+        shifts += expand_amount
     x_shift.append(shifts)
 
 galaxies = []
