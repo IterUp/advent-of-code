@@ -1,30 +1,30 @@
 from itertools import combinations
 
 def process_pattern(pattern, sizes, cache):
+    if not sizes:
+        return 0 if '#' in pattern else 1
+
+    if not pattern:
+        return 0
+
     cache_hit = cache.get((len(pattern), len(sizes)))
     if cache_hit is not None:
         return cache_hit
 
     result = 0
-    if not sizes:
-        if '#' not in pattern:
-            result = 1
-    elif not pattern:
-        result = 0
-    else:
-        if pattern[0] in ('#', '?'):
-            curr_size = sizes[0]
-            if len(pattern) >= curr_size and all(c in ('#', '?') for c in pattern[:curr_size]):
-                if len(pattern) == curr_size:
-                    result = 1 if len(sizes) == 1 else 0
-                else:
-                    next_char = pattern[curr_size]
-                    result = 0 if next_char == '#' else process_pattern(pattern[curr_size+1:], sizes[1:], cache)
+    if pattern[0] in ('#', '?'):
+        curr_size = sizes[0]
+        if len(pattern) >= curr_size and all(c in ('#', '?') for c in pattern[:curr_size]):
+            if len(pattern) == curr_size:
+                result = 1 if len(sizes) == 1 else 0
             else:
-                result = 0
+                next_char = pattern[curr_size]
+                result = 0 if next_char == '#' else process_pattern(pattern[curr_size+1:], sizes[1:], cache)
+        else:
+            result = 0
 
-        if pattern[0] in ('.', '?'):
-            result += process_pattern(pattern[1:], sizes, cache)
+    if pattern[0] in ('.', '?'):
+        result += process_pattern(pattern[1:], sizes, cache)
 
     cache[(len(pattern), len(sizes))] = result
     return result
