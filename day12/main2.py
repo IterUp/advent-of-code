@@ -1,5 +1,3 @@
-from itertools import combinations
-
 def process_pattern(pattern, sizes, cache):
     if not sizes:
         return 0 if '#' in pattern else 1
@@ -39,9 +37,6 @@ def process_line(line):
         pattern = '?'.join(multiple*[pattern])
         hit_sizes = multiple * hit_sizes
     cache = {}
-    result = process_pattern(pattern, hit_sizes, cache)
-    # print(cache)
-    # print(pattern, hit_sizes)
-    return result
+    return process_pattern(pattern, hit_sizes, cache)
 
 print(sum(process_line(line.strip()) for line in open("input.txt")))
