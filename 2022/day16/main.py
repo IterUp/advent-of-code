@@ -4,6 +4,7 @@ class Valve:
         self.label = parts[1]
         self.rate = int(parts[4][5:-1])
         self.tunnels = [part.removesuffix(',') for part in parts[9:]]
+        self.was_visited = False
 
 class Valves:
     def __init__(self, valves):
@@ -58,7 +59,7 @@ class Valves:
 
     def dump(self):
         for valve in self.rate_valves.values():
-            print(valve.label, min(x[1] for x in valve.rate_tunnels))
+            print(f"Label {valve.label}: {valve.rate} {valve.rate_tunnels}")
 
     def calc_upper_bounds(self, max_time):
         min_distance = min(min(x[1] for x in self.rate_valves[valve.label].rate_tunnels) for valve in self.rate_valves.values())
@@ -78,10 +79,33 @@ class Valves:
             upper_bounds.append(total)
         return upper_bounds
 
-valves = Valves([Valve(line) for line in open("test_input.txt")])
+    def search(self, pos, time, upper_bounds, total = 0, path = ()):
+        global best
+        # print("search", time, total, best)
+        time -= 1
+        if time <= 0:
+            if total > best:
+                print("Best:", total, path)
+                print([v.label for v in self.rate_valves.values() if v.was_visited])
+                best = total
+            return
+        curr_valve = self.rate_valves[pos]
+        if curr_valve.was_visited:
+            return
+        total += curr_valve.rate * time
+        path = path + ((pos, time, curr_valve.rate),)
+        curr_valve.was_visited = True
+        for neighbour, dist in curr_valve.rate_tunnels:
+            self.search(neighbour, time - dist, upper_bounds, total, path)
+        curr_valve.was_visited = False
+
+valves = Valves([Valve(line) for line in open("input.txt")])
 valves.make_rate_graph()
 valves.dump()
-distances = valves.get_rate_distances("AA")
-print(distances)
+start_distances = valves.get_rate_distances("AA")
+print("start_distances:", start_distances)
 upper_bounds = valves.calc_upper_bounds(30)
 print(upper_bounds)
+best = 0
+for start_pos, start_dist in start_distances:
+	valves.search(start_pos, 30 - start_dist, upper_bounds)
