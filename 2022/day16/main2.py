@@ -1,10 +1,14 @@
+total_time = 26
+
+
 class Valve:
     def __init__(self, line):
         parts = line.strip().split()
         self.label = parts[1]
         self.rate = int(parts[4][5:-1])
         self.tunnels = [part.removesuffix(",") for part in parts[9:]]
-        self.was_visited = False
+        self.was_visited = [False, False]
+        self.is_open = False
 
 
 class Valves:
@@ -52,39 +56,60 @@ class Valves:
             for i in range(time // min_step):
                 if i < len(rates):
                     total += rates[i] * (time - (min_step * (i + 1)))
-                    # print("i:", i, rates[i], time, (min_step*(i+1)), total)
             upper_bounds.append(total)
         return upper_bounds
 
-    def search(self, pos, time, upper_bounds, total=0, path=()):
+    def search(self, pos_pair, time_pair, total=0, path=()):
         global best
-        # print("search", time, total, best)
-        time -= 1
-        if time <= 0:
+        if upper_bounds[time_pair[0]] + upper_bounds[time_pair[1]] + total < best:
+            return
+
+        moving_id = 0 if time_pair[0] >= time_pair[1] else 1
+        pos = pos_pair[moving_id]
+        time = time_pair[moving_id]
+
+        if time <= 1:
             if total > best:
-                # print("Best:", total, path)
-                # print([v.label for v in self.rate_valves.values() if v.was_visited])
                 best = total
             return
+
         curr_valve = self.rate_valves[pos]
-        if curr_valve.was_visited:
+        if curr_valve.was_visited[moving_id]:
             return
-        total += curr_valve.rate * time
-        path = path + ((pos, time, curr_valve.rate),)
-        curr_valve.was_visited = True
+        curr_valve.was_visited[moving_id] = True
+
+        old_is_open = curr_valve.is_open
+        if not curr_valve.is_open:
+            time -= 1
+            total += curr_valve.rate * time
+            if total > best:
+                best = total
+            curr_valve.is_open = True
+        path = path + ((moving_id, pos, time, curr_valve.rate, total, old_is_open),)
         for neighbour, dist in curr_valve.rate_tunnels:
-            self.search(neighbour, time - dist, upper_bounds, total, path)
-        curr_valve.was_visited = False
+            if moving_id == 0:
+                new_pos_pair = (neighbour, pos_pair[1])
+                new_time_pair = (time - dist, time_pair[1])
+            else:
+                new_pos_pair = (pos_pair[0], neighbour)
+                new_time_pair = (time_pair[0], time - dist)
+            self.search(new_pos_pair, new_time_pair, total, path)
+        curr_valve.was_visited[moving_id] = False
+        curr_valve.is_open = old_is_open
 
 
 valves = Valves([Valve(line) for line in open("input.txt")])
 valves.make_rate_graph()
 # valves.dump()
 start_distances = valves.get_rate_distances("AA")
-# print("start_distances:", start_distances)
-upper_bounds = valves.calc_upper_bounds(30)
-# print(upper_bounds)
+print("start_distances:", start_distances)
+upper_bounds = valves.calc_upper_bounds(total_time)
 best = 0
-for start_pos, start_dist in start_distances:
-    valves.search(start_pos, 30 - start_dist, upper_bounds)
-print(f"*** {best} ***")
+for start_pos_a, start_dist_a in start_distances:
+    for start_pos_b, start_dist_b in start_distances:
+        if start_pos_a <= start_pos_b:
+            valves.search(
+                (start_pos_a, start_pos_b),
+                (total_time - start_dist_a, total_time - start_dist_b),
+            )
+print(best)
