@@ -38,10 +38,6 @@ class Valves:
             distances = self.get_rate_distances(valve.label)
             valve.rate_tunnels = distances
 
-    def dump(self):
-        for valve in self.rate_valves.values():
-            print(f"Label {valve.label}: {valve.rate} {valve.rate_tunnels}")
-
     def calc_upper_bounds(self, max_time):
         min_distance = min(
             min(x[1] for x in self.rate_valves[valve.label].rate_tunnels)
@@ -59,7 +55,7 @@ class Valves:
             upper_bounds.append(total)
         return upper_bounds
 
-    def search(self, pos_pair, time_pair, total=0, path=()):
+    def search(self, pos_pair, time_pair, total=0):
         global best
         if upper_bounds[time_pair[0]] + upper_bounds[time_pair[1]] + total < best:
             return
@@ -85,7 +81,6 @@ class Valves:
             if total > best:
                 best = total
             curr_valve.is_open = True
-        path = path + ((moving_id, pos, time, curr_valve.rate, total, old_is_open),)
         for neighbour, dist in curr_valve.rate_tunnels:
             if moving_id == 0:
                 new_pos_pair = (neighbour, pos_pair[1])
@@ -93,16 +88,14 @@ class Valves:
             else:
                 new_pos_pair = (pos_pair[0], neighbour)
                 new_time_pair = (time_pair[0], time - dist)
-            self.search(new_pos_pair, new_time_pair, total, path)
+            self.search(new_pos_pair, new_time_pair, total)
         curr_valve.was_visited[moving_id] = False
         curr_valve.is_open = old_is_open
 
 
 valves = Valves([Valve(line) for line in open("input.txt")])
 valves.make_rate_graph()
-# valves.dump()
 start_distances = valves.get_rate_distances("AA")
-print("start_distances:", start_distances)
 upper_bounds = valves.calc_upper_bounds(total_time)
 best = 0
 for start_pos_a, start_dist_a in start_distances:
