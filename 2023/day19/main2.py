@@ -1,5 +1,6 @@
 from math import prod
 
+
 class RangeSplitter:
     def __init__(self, line):
         self.key = line[0]
@@ -10,12 +11,14 @@ class RangeSplitter:
         exact_range = range[self.key]
         value = self.value
 
-        if (value <= exact_range[0] and self.operation == "<") or \
-            (value >= exact_range[1] and self.operation == ">"):
+        if (value <= exact_range[0] and self.operation == "<") or (
+            value >= exact_range[1] and self.operation == ">"
+        ):
             return None
 
-        if (value < exact_range[0] and self.operation == ">") or \
-            (value > exact_range[1] and self.operation == "<"):
+        if (value < exact_range[0] and self.operation == ">") or (
+            value > exact_range[1] and self.operation == "<"
+        ):
             new_range = range.copy()
             for c in "xmas":
                 del range[c]
@@ -32,6 +35,7 @@ class RangeSplitter:
 
         return new_range
 
+
 class Condition:
     def __init__(self, line):
         parts = line.split(":")
@@ -40,7 +44,6 @@ class Condition:
 
     def split_range(self, range):
         return self.destination, (self.splitter(range) if self.splitter else range)
-        
 
 
 class Workflow:
@@ -55,9 +58,9 @@ class Workflows:
             label, remainder = line.split("{")
             self.workflows[label] = Workflow(remainder[:-1])
 
-    def num_accepted(self, range, curr = "in"):
+    def num_accepted(self, range, curr="in"):
         if curr == "A":
-            return prod(y-x+1 for x, y in range.values())
+            return prod(y - x + 1 for x, y in range.values())
         if curr == "R":
             return 0
 
@@ -71,11 +74,9 @@ class Workflows:
 
         return total
 
+
 f = open("test_input.txt")
 workflows = Workflows(f)
-range = dict(x = (1,4000),
-    m = (1, 4000),
-    a = (1, 4000),
-    s = (1, 4000))
+range = dict(x=(1, 4000), m=(1, 4000), a=(1, 4000), s=(1, 4000))
 
 print(workflows.num_accepted(range))
