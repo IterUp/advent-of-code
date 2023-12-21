@@ -1,0 +1,41 @@
+Conjunctions
+rt: ['&jf', '%hv', '%bs', '%kt', '%fn']
+gk: ['%mx', '%sc', '%vq', '%bz', '%ng', '&zk', '%sm']
+hj: ['rx']
+ks: ['&hj']
+jf: ['&hj']
+qs: ['&hj']
+fv: ['%xt', '&qs', '%gs', '%cn', '%lx', '%hk']
+zk: ['&hj']
+sl: ['%fk', '%rq', '%fz', '%xd', '&ks']
+Sources
+rt: [bs, pn, vm, vj, zz, bt, jg, rr, mk]
+gk: [sb, vz, rk, bz, rl, rh, lg]
+hj: [ks, jf, qs, zk]
+ks: [sl]
+jf: [rt]
+qs: [fv]
+fv: [cn, bc, kp, jr, gn, jx, pq, bf]
+zk: [gk]
+sl: [rq, dc, ql, jl, mr, jc, gv, mm, cc]
+
+
+Ordering:
+sl: [rq, xd, mm, ql, fz, jc, fk, cc, gv, jl, mr, dc]
+fv: [cn, kp, pq, lx, gs, xt, gn, hk, jx, bf, jr, bc]
+rt: [bs, mk, kt, bt, fn, vj, rr, hv, zz, jg, vm, pn]
+gk: [bz, sc, sm, mx, rl, rh, vq, ng, vz, lg, rk, sb]
+
+Sources:
+sl: [ 0:rq, 11:dc,  3:ql,  9:jl, 10:mr,  5:jc, 8:gv, 2:mm, 7:cc]
+fv: [ 0:cn, 11:bc,  1:kp, 10:jr,  6:gn,  8:jx, 2:pq, 9:bf]
+rt: [ 0:bs, 11:pn, 10:vm,  5:vj,  8:zz,  3:bt, 9:jg, 6:rr, 1:mk]
+gk: [11:sb,  8:vz, 10:rk,  0:bz,  4:rl,  5:rh, 9:lg]
+
+Destinations:
+sl: ['%fk', '%rq', '%fz', '%xd', '&ks']
+fv: ['%xt', '&qs', '%gs', '%cn', '%lx', '%hk']
+rt: ['&jf', '%hv', '%bs', '%kt', '%fn']
+gk: ['%mx', '%sc', '%vq', '%bz', '%ng', '&zk', '%sm']
+
+240914003753369
