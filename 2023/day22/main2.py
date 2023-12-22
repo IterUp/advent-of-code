@@ -46,6 +46,23 @@ class Brick:
         )
         self.pos = Pos(self.pos.x, self.pos.y, new_height + 1)
 
+    def num_in_chain(self):
+        gone = set()
+        gone.add(self)
+        layer = [self]
+        while layer:
+            next_layer = []
+            for curr_brick in layer:
+                for upper in curr_brick.supporting:
+                    if all(
+                        lower_supporting in gone
+                        for lower_supporting in upper.supported_by
+                    ):
+                        gone.add(upper)
+                        next_layer.append(upper)
+            layer = next_layer
+        return len(gone) - 1
+
 
 bricks = [
     Brick(line, index)
@@ -63,9 +80,4 @@ for supporter in bricks:
             supporter.supporting.append(supported)
             supported.supported_by.append(supporter)
 
-print(
-    sum(
-        all(len(supported.supported_by) > 1 for supported in brick.supporting)
-        for brick in bricks
-    )
-)
+print(sum(brick.num_in_chain() for brick in bricks))
