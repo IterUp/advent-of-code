@@ -10,7 +10,7 @@ def get_neighbours(lines, row, col):
 
 
 def main():
-    lines = [list(line) for line in open("input.txt").read().splitlines()]
+    lines = open("input.txt").read().splitlines()
     new_map = [list(line) for line in lines]
     old_map = [list(line) for line in lines]
 
