@@ -1,4 +1,4 @@
-lines = [line.split(":") for line in open("input.txt")]
+lines = [line.split(": ") for line in open("input.txt")]
 locals = {}
 
 while "root" not in locals:
