@@ -56,9 +56,18 @@ def part1(lines):
     return num_flashes
 
 
+def is_zero(matrix):
+    return all(v == 0 for row in matrix for v in row)
+
+
 def part2(lines):
     matrix = make_matrix(lines)
-    return 0
+    steps = 0
+
+    while not is_zero(matrix):
+        steps += 1
+        advance(matrix)
+    return steps
 
 
 def main(input):
