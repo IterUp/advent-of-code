@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 is_test = False
 
 
@@ -21,8 +23,49 @@ def part1(input):
     return max(frequencies) - min(frequencies)
 
 
+def combine(f1, f2, c):
+    f = f1.copy()
+    for k in f2:
+        f[k] += f2[k]
+    f[c] -= 1
+    return f
+
+
+def calc_frequencies(template, rules, steps, cache):
+    if len(template) > 2:
+        return combine(
+            calc_frequencies(template[:2], rules, steps, cache),
+            calc_frequencies(template[1:], rules, steps, cache),
+            template[1],
+        )
+
+    key = (template, steps)
+    if key in cache:
+        return cache[key]
+
+    if steps == 0:
+        d = defaultdict(int)
+        for c in template:
+            d[c] += 1
+        return d
+
+    c = rules[template]
+
+    result = combine(
+        calc_frequencies("".join((template[0], c)), rules, steps - 1, cache),
+        calc_frequencies("".join((c, template[1])), rules, steps - 1, cache),
+        c,
+    )
+    cache[key] = result
+    return result
+
+
 def part2(input):
-    return 0
+    template, rules = input
+    cache = {}
+    frequencies = calc_frequencies(template, rules, 40, cache)
+    # print(cache, frequencies)
+    return max(frequencies.values()) - min(frequencies.values())
 
 
 def main(input):
