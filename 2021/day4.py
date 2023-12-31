@@ -33,6 +33,10 @@ def find_winner(boards, numbers):
             return board
 
 
+def find_winners(boards, numbers):
+    return [board for board in boards if is_winner(board, numbers)]
+
+
 def score(board, numbers):
     return sum(v for row in board for v in row if v not in numbers)
 
@@ -47,8 +51,19 @@ def part1(numbers_list, boards):
     assert False, "There was no winner"
 
 
-def part2(lines):
-    return 0
+def part2(numbers_list, input_boards):
+    boards = input_boards[:]
+    numbers = set()
+    for number in numbers_list:
+        numbers.add(number)
+        winners = find_winners(boards, numbers)
+        for winner in winners:
+            boards.remove(winner)
+            the_score = score(winner, numbers)
+            last_score = number * score(winner, numbers)
+            if not boards:
+                return last_score
+    assert False, "There was no winner"
 
 
 def main():
@@ -57,7 +72,7 @@ def main():
     boards = read_boards(f)
 
     print("Part 1:", part1(numbers_list, boards))
-    # print("Part 2:", part2(lines))
+    print("Part 2:", part2(numbers_list, boards))
 
 
 main()
