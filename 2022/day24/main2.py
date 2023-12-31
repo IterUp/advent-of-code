@@ -10,15 +10,11 @@ end_pos = (valley[-1].index("."), len(valley) - 1)
 mod_x = len(valley[0]) - 2
 mod_y = len(valley) - 2
 
-queue = collections.deque()
-queue.append(((start_pos[0], 1), 1))
-pos = None
-
-visited = set()
-
 
 def is_free(pos, time):
     if pos[1] < 0:
+        return False
+    if pos[1] >= len(valley):
         return False
     if valley[pos[1]][pos[0]] == "#":
         return False
@@ -33,20 +29,26 @@ def is_free(pos, time):
     return True
 
 
-max_pos = 0
+def search(src, dst, start_time):
+    queue = collections.deque()
+    queue.append((src, start_time))
 
-while queue[0][0] != end_pos:
-    pos, time = queue.popleft()
-    # print(pos, time)
-    if pos[0] + pos[1] > max_pos:
-        print("New max:", pos, time)
-        max_pos = sum(pos)
-    next_time = time + 1
-    for d in ((0, 1), (1, 0), (0, 0), (0, -1), (-1, 0)):
-        next_pos = (pos[0] + d[0], pos[1] + d[1])
-        if (next_pos, next_time) not in visited:
-            visited.add((next_pos, next_time))
-            if is_free(next_pos, next_time):
-                queue.append((next_pos, next_time))
+    visited = set()
 
-print(queue[0][1])
+    while queue[0][0] != dst:
+        pos, time = queue.popleft()
+        next_time = time + 1
+        for d in ((0, 1), (1, 0), (0, 0), (0, -1), (-1, 0)):
+            next_pos = (pos[0] + d[0], pos[1] + d[1])
+            if (next_pos, next_time) not in visited:
+                visited.add((next_pos, next_time))
+                if is_free(next_pos, next_time):
+                    queue.append((next_pos, next_time))
+
+    return queue[0][1]
+
+
+t = search(start_pos, end_pos, 0)
+t = search(end_pos, start_pos, t)
+t = search(start_pos, end_pos, t)
+print(t)
