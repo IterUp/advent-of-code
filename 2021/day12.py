@@ -6,25 +6,35 @@ class Node:
         self.label = label
         self.neighbours = []
 
+    def add(self, neighbour):
+        if neighbour.label != "start":
+            self.neighbours.append(neighbour)
+
     def __repr__(self):
         return self.label
 
 
-def find_paths(node, nodes, visited, path):
+def find_paths(node, nodes, visited, path, num_spares=0):
     if node.label == "end":
         return 1
 
     num_paths = 0
     for neighbour in node.neighbours:
-        if neighbour not in visited:
-            if neighbour.label.islower():
+        has_visited = neighbour in visited
+        if not has_visited or (num_spares > 0):
+            new_num_spares = num_spares - 1 if has_visited else num_spares
+
+            should_remove = False
+
+            if neighbour.label.islower() and not has_visited:
+                should_remove = True
                 visited.add(neighbour)
 
             num_paths += find_paths(
-                neighbour, nodes, visited, path + (neighbour.label,)
+                neighbour, nodes, visited, path + (neighbour.label,), new_num_spares
             )
 
-            if neighbour.label.islower():
+            if should_remove:
                 visited.remove(neighbour)
     return num_paths
 
@@ -37,7 +47,10 @@ def part1(nodes):
 
 
 def part2(nodes):
-    return 0
+    visited = set()
+    start = nodes["start"]
+    visited.add(start)
+    return find_paths(nodes["start"], nodes, visited, (), 1)
 
 
 def main(input):
@@ -51,8 +64,8 @@ def read_input(filename):
         src_label, dst_label = line.split("-")
         src = nodes.get(src_label, Node(src_label))
         dst = nodes.get(dst_label, Node(dst_label))
-        src.neighbours.append(dst)
-        dst.neighbours.append(src)
+        src.add(dst)
+        dst.add(src)
         nodes[src_label] = src
         nodes[dst_label] = dst
 
