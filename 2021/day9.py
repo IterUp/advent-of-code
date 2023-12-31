@@ -1,4 +1,46 @@
+from math import prod
+
 is_test = False
+
+
+def neighbours(matrix, x, y):
+    if x > 0:
+        yield x - 1, y
+    if x < len(matrix[0]) - 1:
+        yield x + 1, y
+    if y > 0:
+        yield x, y - 1
+    if y < len(matrix) - 1:
+        yield x, y + 1
+
+
+def is_low_point(matrix, x, y, v):
+    return all(matrix[y][x] <= v for x, y in neighbours(matrix, x, y))
+
+
+def part1(matrix):
+    return sum(
+        v + 1
+        for y, row in enumerate(matrix)
+        for x, v in enumerate(row)
+        if is_low_point(matrix, x, y, v)
+    )
+
+
+def flood(start_x, start_y, matrix):
+    visited = set()
+    start = (start_x, start_y)
+    queue = [start]
+    visited.add(start)
+    while queue:
+        curr = queue.pop(0)
+        for x, y in neighbours(matrix, curr[0], curr[1]):
+            p = (x, y)
+            if p not in visited and matrix[y][x] != 9:
+                visited.add(p)
+                queue.append(p)
+
+    return len(visited)
 
 
 def is_low_point(matrix, x, y, v):
@@ -13,17 +55,15 @@ def is_low_point(matrix, x, y, v):
     return True
 
 
-def part1(matrix):
-    return sum(
-        v + 1
+def part2(matrix):
+    sizes = sorted(
+        flood(x, y, matrix)
         for y, row in enumerate(matrix)
         for x, v in enumerate(row)
         if is_low_point(matrix, x, y, v)
     )
 
-
-def part2(matrix):
-    return 0
+    return prod(sizes[-3:])
 
 
 def main(input):
