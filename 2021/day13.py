@@ -1,18 +1,31 @@
 is_test = False
 
 
+def fold(positions, instruction):
+    direction, v = instruction
+    return (
+        [(x if x < v else 2 * v - x, y) for x, y in positions]
+        if direction == "x"
+        else [(x, y if y < v else 2 * v - y) for x, y in positions]
+    )
+
+
 def part1(input):
     positions, instructions = input
-    direction, v = instructions[0]
-
-    if direction == "x":
-        return len(set((x if x < v else 2 * v - x, y) for x, y in positions))
-    else:
-        return len(set((x, y if y < v else 2 * v - y) for x, y in positions))
+    return len(set(fold(positions, instructions[0])))
 
 
 def part2(input):
-    return 0
+    positions, instructions = input
+    for instruction in instructions:
+        positions = fold(positions, instruction)
+
+    width = max(p[0] for p in positions) + 1
+    height = max(p[1] for p in positions) + 1
+    return "\n" + "\n".join(
+        "".join("#" if (x, y) in positions else " " for x in range(width))
+        for y in range(height)
+    )
 
 
 def main(input):
