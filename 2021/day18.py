@@ -1,3 +1,6 @@
+from itertools import permutations
+from copy import deepcopy
+
 is_test = False
 
 
@@ -105,7 +108,7 @@ def reduce(number):
 
 
 def part1(numbers):
-    numbers = numbers[:]
+    numbers = deepcopy(numbers)
     number = numbers.pop(0)
     i = 0
     while numbers:
@@ -116,10 +119,14 @@ def part1(numbers):
 
 
 def part2(numbers):
-    number = numbers[0]
-    for right in numbers[1:]:
-        number = [number, right]
-    return 0
+    numbers = deepcopy(numbers)
+    result = 0
+    for left, right in permutations(numbers, 2):
+        number = [deepcopy(left), deepcopy(right)]
+        reduce(number)
+        result = max(result, score(number))
+
+    return result
 
 
 def main(input):
