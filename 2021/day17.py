@@ -1,3 +1,5 @@
+from math import ceil, floor
+
 is_test = False
 
 
@@ -7,8 +9,32 @@ def part1(ranges):
     return v * (v - 1) // 2
 
 
-def part2(packet):
-    return 0
+def hits(vx, vy, x_range, y_range):
+    x, y = 0, 0
+    while y >= y_range[0]:
+        x += vx
+        y += vy
+
+        if (x_range[0] <= x <= x_range[1]) and (y_range[0] <= y <= y_range[1]):
+            return True
+
+        vx = max(0, vx - 1)
+        vy -= 1
+
+    return False
+
+
+def part2(ranges):
+    x_range, y_range = ranges
+    max_steps = 2 * (-y_range[0])
+
+    total = 0
+
+    for x_vel in range(1, x_range[1] + 1):
+        for y_vel in range(y_range[0], -y_range[0] + 2):
+            total += hits(x_vel, y_vel, x_range, y_range)
+
+    return total
 
 
 def main(input):
