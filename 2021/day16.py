@@ -1,3 +1,5 @@
+from math import prod
+
 is_test = False
 
 d = {
@@ -49,6 +51,26 @@ class Packet:
     def sum_versions(self):
         return self.version + sum(p.sum_versions() for p in self.packets)
 
+    def calc(self):
+        if self.type == 0:
+            return sum(p.calc() for p in self.packets)
+        elif self.type == 1:
+            return prod(p.calc() for p in self.packets)
+        elif self.type == 2:
+            return min(p.calc() for p in self.packets)
+        elif self.type == 3:
+            return max(p.calc() for p in self.packets)
+        elif self.type == 4:
+            return self.value
+        elif self.type == 5:
+            return self.packets[0].calc() > self.packets[1].calc()
+        elif self.type == 6:
+            return self.packets[0].calc() < self.packets[1].calc()
+        elif self.type == 7:
+            return self.packets[0].calc() == self.packets[1].calc()
+
+        assert False, f"Invalid: {self.type=}"
+
 
 class BinaryStream:
     def __init__(self, data):
@@ -71,14 +93,12 @@ class BinaryStream:
         return self.pos >= len(self.data)
 
 
-def part1(line):
-    stream = BinaryStream(line)
-    p = Packet(stream)
-    return p.sum_versions()
+def part1(packet):
+    return packet.sum_versions()
 
 
-def part2(line):
-    return 0
+def part2(packet):
+    return packet.calc()
 
 
 def main(input):
@@ -87,7 +107,8 @@ def main(input):
 
 
 def read_input(filename):
-    return "".join(d[c] for c in open(filename).readline().strip())
+    stream = BinaryStream("".join(d[c] for c in open(filename).readline().strip()))
+    return Packet(stream)
 
 
 main(read_input("test_input/day16.txt" if is_test else "input/day16.txt"))
