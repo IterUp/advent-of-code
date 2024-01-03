@@ -1,3 +1,4 @@
+from itertools import combinations
 from collections import deque
 
 is_test = False
@@ -57,11 +58,18 @@ class Scanner:
     rotations = make_all_rotations()
 
     def __init__(self, f, index):
+        self.pos = None
         self.index = index
-        self.is_attached = False
         self.beacons = set()
         while line := f.readline().strip():
             self.beacons.add(tuple(int(v) for v in line.split(",")))
+
+    def attach_at(self, pos):
+        self.pos = pos
+
+    @property
+    def is_attached(self):
+        return self.pos is not None
 
     def attach_to(self, fixed_scanner):
         for m in Scanner.rotations:
@@ -70,18 +78,19 @@ class Scanner:
             for b1 in fixed_scanner.beacons:
                 for b2 in curr_beacons:
                     offset = sub(b1, b2)
+                    pos = sub(b2, b1)
                     beacons = set(add(b, offset) for b in curr_beacons)
                     overlap = len(fixed_scanner.beacons.intersection(beacons))
                     assert overlap >= 1
                     if overlap >= 12:
                         self.beacons = beacons
-                        self.is_attached = True
+                        self.attach_at(pos)
                         return True
         return False
 
 
 def part1(scanners):
-    scanners[0].is_attached = True
+    scanners[0].attach_at((0, 0, 0))
     unchecked = deque()
     unchecked.append(scanners[0])
 
@@ -101,8 +110,12 @@ def part1(scanners):
     return len(beacons)
 
 
+def dist(p1, p2):
+    return sum(abs(x - y) for x, y in zip(p1, p2))
+
+
 def part2(scanners):
-    return 0
+    return max(dist(s1.pos, s2.pos) for s1, s2 in combinations(scanners, 2))
 
 
 def main(input):
