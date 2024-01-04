@@ -15,8 +15,8 @@ def print_pixels(pixels):
     print()
 
 
-def part1(lookup, pixels):
-    for i in range(2):
+def process(lookup, pixels, num_loops):
+    for i in range(num_loops):
         new_pixels = set()
         x_range, y_range = [
             (min(p[i] for p in pixels), max(p[i] for p in pixels)) for i in range(2)
@@ -40,8 +40,12 @@ def part1(lookup, pixels):
     return len(pixels)
 
 
+def part1(lookup, pixels):
+    return process(lookup, pixels, 2)
+
+
 def part2(lookup, pixels):
-    return 0
+    return process(lookup, pixels, 50)
 
 
 def main(inputs):
