@@ -2,8 +2,10 @@ from math import prod
 
 is_test = False
 
+
 def clip_range(a, b):
     return range(max(a, -50), min(b, 50))
+
 
 def make_cubes(steps):
     cubes = set()
