@@ -1,7 +1,7 @@
 is_test = False
 
 
-def part1(values):
+def calc(values, calc_pair):
     seq = [None] * 14
     stack = []
 
@@ -10,14 +10,16 @@ def part1(values):
             stack.append((i, c))
         else:
             prev_i, prev_c = stack.pop()
-            step = prev_c + b
-            seq[prev_i] = 9 - max(step, 0)
-            seq[i] = 9 + min(step, 0)
+            seq[prev_i], seq[i] = calc_pair(prev_c + b)
     return "".join(str(v) for v in seq)
 
 
-def part2(instructions):
-    return 0
+def part1(values):
+    return calc(values, lambda step: (9 - max(step, 0), 9 + min(step, 0)))
+
+
+def part2(values):
+    return calc(values, lambda step: (1 - min(step, 0), 1 + max(step, 0)))
 
 
 def main(inputs):
@@ -40,3 +42,4 @@ def read_input(filename):
 
 
 main(read_input("test_input/day24.txt" if is_test else "input/day24.txt"))
+# 93997999296912
