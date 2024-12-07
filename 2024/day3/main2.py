@@ -12,10 +12,10 @@ def process_line(line):
         dont_pos = line.find("don't()")
         if do_pos != -1 and do_pos < pos:
             is_enabled = True
-            line = line[:do_pos+4]
+            line = line[do_pos+4:]
         elif dont_pos != -1 and dont_pos < pos:
             is_enabled = False
-            line = line[:dont_pos+7]
+            line = line[dont_pos+7:]
         else:
             line = line[pos+4:]
             comma_pos = line.find(",")
@@ -23,7 +23,7 @@ def process_line(line):
 
             if (comma_pos != -1) and (comma_pos < close_pos):
                 left, right = line[:comma_pos], line[comma_pos+1:close_pos]
-                if left.isdecimal() and right.isdecimal():
+                if left.isdecimal() and right.isdecimal() and is_enabled:
                     total += int(left) * int(right)
 
 f = open("input.txt")
