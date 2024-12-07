@@ -1,16 +1,22 @@
-def check(line):
+import math
+
+
+def check(line, num_ops=2):
     total, values = line.split(":")
     total = int(total)
     values = [int(v) for v in values.split()]
 
-    for i in range(2 ** (len(values) - 1)):
+    for i in range(num_ops ** (len(values) - 1)):
         x = values[0]
         for v in values[1:]:
-            if i % 2:
+            op = i % num_ops
+            if op == 0:
                 x += v
-            else:
+            elif op == 1:
                 x *= v
-            i //= 2
+            else:
+                x = x * (10 ** math.ceil(math.log10(v + 1))) + v
+            i //= num_ops
         if x == total:
             return total
 
@@ -22,7 +28,7 @@ def part1(lines):
 
 
 def part2(lines):
-    return 0
+    return sum(check(line, 3) for line in lines)
 
 
 f = open("input.txt")
