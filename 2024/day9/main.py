@@ -23,18 +23,49 @@ def part1():
             result.append(back)
             gaps[0] = curr_gap - back[1]
             blocks = blocks[:-1]
-    print(result)
+
+    return cal_total(result)
+
+
+def cal_total(result):
     total = 0
     pos = 0
     for r in result:
         for i in range(r[1]):
-            total += r[0] * (pos + i)
+            if r[0] != -1:
+                total += r[0] * (pos + i)
         pos += r[1]
     return total
 
 
+def find_gap(blocks, size):
+    for i, block in enumerate(blocks):
+        if (block[0] == -1) and (block[1] >= size):
+            return i
+    return None
+
+
 def part2():
-    return 0
+    blocks = [[i // 2 if i % 2 == 0 else -1, int(c)] for i, c in enumerate(line)]
+    pos = len(blocks) - 1
+    while pos > 0:
+        curr = blocks[pos]
+        if curr[0] != -1:
+            gap = find_gap(blocks, curr[1])
+            if (gap is not None) and (gap < pos):
+                blocks = (
+                    blocks[:gap]
+                    + [blocks[pos]]
+                    + blocks[gap:pos]
+                    + [[-1, blocks[pos][1]]]
+                    + blocks[pos + 1 :]
+                )
+                blocks[gap + 1][1] -= curr[1]
+            else:
+                pos = pos - 1
+        else:
+            pos = pos - 1
+    return cal_total(blocks)
 
 
 print("Part 1 =", part1())
