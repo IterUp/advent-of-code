@@ -21,11 +21,18 @@ def convert(line):
 robots = [convert(line.strip()) for line in f.readlines()]
 
 
+def calc_new_pos(p, v, t):
+    return ((p[0] + t * v[0]) % w, (p[1] + t * v[1]) % h)
+
+
+def robot_positions(robots, time):
+    for p, v in robots:
+        yield calc_new_pos(p, v, time)
+
+
 def part1(robots):
     time = 100
-    new_robots = [
-        ((p[0] + time * v[0]) % w, (p[1] + time * v[1]) % h) for p, v in robots
-    ]
+    new_robots = [calc_new_pos(p, v, time) for p, v in robots]
     quads = [0, 0, 0, 0]
     for pos in new_robots:
         if pos[0] < w // 2:
@@ -41,7 +48,37 @@ def part1(robots):
     return math.prod(quads)
 
 
+def print_tree(robots, t):
+    grid = [[0] * w for _ in range(h)]
+    for p in robot_positions(robots, t):
+        grid[p[1]][p[0]] += 1
+    for line in grid:
+        print("".join("#" if c > 0 else " " for c in line))
+
+
 def part2(robots):
+    max_x_freq = 0
+    max_x_freq_time = 0
+    max_y_freq = 0
+    max_y_freq_time = 0
+    for t in range(max(w, h)):
+        x_freq = [0] * w
+        y_freq = [0] * h
+        for p in robot_positions(robots, t):
+            x_freq[p[0]] += 1
+            y_freq[p[1]] += 1
+        if max(x_freq) > max_x_freq:
+            max_x_freq = max(x_freq)
+            max_x_freq_time = t
+        if max(y_freq) > max_y_freq:
+            max_y_freq = max(y_freq)
+            max_y_freq_time = t
+    for t in range(w * h):
+        if ((t % w) == max_x_freq_time) and ((t % h) == max_y_freq_time):
+            # print_tree(robots, t)
+            # print("Time:", t)
+            return t
+
     return 0
 
 
